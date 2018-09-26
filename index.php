@@ -3,6 +3,8 @@
 	<title>BoogieMan | Are you being tracked by big companies?</title>
 </head>
 <body>
+	<p>example: bart@fullcontact.com</p>
+	<p>Note: so far this can only load prfile pictures from twitter. </p>
 	<form method='POST'>
 		<label>Email: </label><input type='text' name='input_email'>
 		<input type='submit' name='submit', value='search'>
@@ -15,6 +17,8 @@
 		$url = "https://api.fullcontact.com/v2/person.json?email=".$target_email;
 		
 		$twitter_handler = curl_init();
+		
+		//i know this looks barbaric, but i just did this for the sake of complete this within an hour
 		
 		//sets http header, urls and all that jazz
 		curl_setopt($handle, CURLOPT_HTTPHEADER, array($base.$key));
