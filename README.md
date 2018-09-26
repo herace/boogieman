@@ -7,6 +7,7 @@ Boogieman is a search engine that will serach up how much your personal informat
 * Phone Number, Address
 * Tweets, facebook, and instagram post
 * and more
+
 Boogieman will:
   * sort any past post that will possibly hurt your reputation at the job market.
   * generate a graph of how much privacy you have on social media sites.
