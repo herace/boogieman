@@ -10,6 +10,8 @@
 		<input type='submit' name='submit', value='search'>
 	</form>
 	<?php
+	error_reporting(E_ALL ^ E_NOTICE);
+	error_reporting(E_ERROR | E_PARSE);	
 		$target_email =  $_POST['input_email'];
 		$handle = curl_init();
 		$base = "X-FullContact-APIKey:";
