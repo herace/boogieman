@@ -10,8 +10,8 @@
 		<input type='submit' name='submit', value='search'>
 	</form>
 	<?php
-	error_reporting(E_ALL ^ E_NOTICE);
-	error_reporting(E_ERROR | E_PARSE);	
+		error_reporting(E_ALL ^ E_NOTICE);
+		error_reporting(E_ERROR | E_PARSE);	
 		$target_email =  $_POST['input_email'];
 		$handle = curl_init();
 		$base = "X-FullContact-APIKey:";
@@ -44,6 +44,9 @@
 		$output_twitter = curl_exec($twitter_handler);
 		$buffer1 = preg_split(':(ProfileAvatar-image):', $output_twitter);
 		$buffer2 = preg_split(':(alt):',$buffer1[1]);
+		if($buffer2[0] == NULL){
+				echo"<b>Unable to pull profile picture.</b>";
+			}
 		//echo $output;
 		//echo ;
 		echo("<img ".$buffer2[0].">");
