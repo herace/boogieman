@@ -3,7 +3,7 @@
 	<title>BoogieMan | Are you being tracked by big companies?</title>
 </head>
 <body>
-	<p>example: bart@fullcontact.com</p>
+	<p>example: bill.gates@microsoft.com</p>
 	<p>Note: so far this can only load prfile pictures from twitter. </p>
 	<form method='POST'>
 		<label>Email: </label><input type='text' name='input_email'>
@@ -31,14 +31,19 @@
 		$output = curl_exec($handle);
 		
 		curl_close($handle);
+		$json = json_decode($output);
 		
-		$twitter_buffer1 = preg_split(':(Twitter):', $output);
-		$twitter_buffer2 = preg_split(':(,):', $twitter_buffer1[1]);
-		$twitter_buffer3 = preg_split(':("):', $twitter_buffer2[1]);
-		//$twitter_buffer4 = preg_replace("url", "", $twitter_buffer2[1]);
+		$layer1 =  $json->{'socialProfiles'};
+
+		for($i = 0; $i < (sizeof($layer1) - 1);$i++){
+			$target = json_encode($layer1[$i]);
+			preg_match('/twitter/', $target, $matches);
+			if($matches != null){
+				$twitter_buffer3 = $layer1[$i]->{"url"};
+			}
+		}
 		
-		
-		curl_setopt($twitter_handler, CURLOPT_URL, $twitter_buffer3[3]/*"https://twitter.com/_siinclaiir_"*/);
+		curl_setopt($twitter_handler, CURLOPT_URL, $twitter_buffer3);
 		curl_setopt($twitter_handler, CURLOPT_RETURNTRANSFER, true);
 		
 		$output_twitter = curl_exec($twitter_handler);
@@ -47,8 +52,6 @@
 		if($buffer2[0] == NULL){
 				echo"<b>Unable to pull profile picture.</b>";
 			}
-		//echo $output;
-		//echo ;
 		echo("<img ".$buffer2[0].">");
 	
 	?>
