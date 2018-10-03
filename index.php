@@ -1,14 +1,21 @@
 <html>
 <head>
 	<title>BoogieMan | Are you being tracked by big companies?</title>
+	<link rel='stylesheet' href='css/bootstrap.min.css'>
+	
 </head>
-<body>
+<body style='background-color:#eee'>
+	<div class='jumbotron' style='background-color:#C293C2'>
+		<h2>BoogieMan</h2>
+	</div>
+	<div>
 	<p>example: bill.gates@microsoft.com</p>
 	<p>Note: so far this can only load prfile pictures from twitter. </p>
 	<form method='POST'>
 		<label>Email: </label><input type='text' name='input_email'>
 		<input type='submit' name='submit', value='search'>
 	</form>
+	</div>
 	<?php
 		error_reporting(E_ALL ^ E_NOTICE);
 		error_reporting(E_ERROR | E_PARSE);	
