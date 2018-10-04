@@ -10,7 +10,6 @@
 	</div>
 	<div>
 	<p>example: bill.gates@microsoft.com</p>
-	<p>Note: so far this can only load prfile pictures from twitter. </p>
 	<form method='POST'>
 		<label>Email: </label><input type='text' name='input_email'>
 		<input type='submit' name='submit', value='search'>
@@ -25,7 +24,15 @@
 		$key = "knDxYtUR8VAUcycRwJX3KBm0znwHxmSp";
 		$url = "https://api.fullcontact.com/v2/person.json?email=".$target_email;
 		
+		
+
+//		$curl_twitter = curl_init();
+//		curl_setopt($curl_twitter, CURLOPT_HTTPHEADER, array());
+		
 		$twitter_handler = curl_init();
+		
+		
+		
 		
 		//i know this looks barbaric, but i just did this for the sake of complete this within an hour
 		
@@ -41,7 +48,16 @@
 		$json = json_decode($output);
 		
 		$layer1 =  $json->{'socialProfiles'};
-
+		$social_media =  $json->{'socialProfiles'};
+		$contactInfo = $json->{'contactInfo'};
+		$age = $json->{'age'};
+		$photos = $json->{'photos'};
+		$demographics = $json->{'demographics'};
+		//$location = $demographics->{'locationDeduced'};
+		
+		//var_dump($contactInfo->{'fullName'});
+		//echo"<h3>Name: ".$fullname."</h3>";
+		
 		for($i = 0; $i < (sizeof($layer1) - 1);$i++){
 			$target = json_encode($layer1[$i]);
 			preg_match('/twitter/', $target, $matches);
@@ -54,13 +70,36 @@
 		curl_setopt($twitter_handler, CURLOPT_RETURNTRANSFER, true);
 		
 		$output_twitter = curl_exec($twitter_handler);
-		$buffer1 = preg_split(':(ProfileAvatar-image):', $output_twitter);
+		$buffer1 = preg_split(':(tweet-text):', $output_twitter);
 		$buffer2 = preg_split(':(alt):',$buffer1[1]);
-		if($buffer2[0] == NULL){
-				echo"<b>Unable to pull profile picture.</b>";
+		if($json->{'status'} != '200'){
+				echo"<b>Unable to find target.</b>";
 			}
-		echo("<img ".$buffer2[0].">");
-	
+		else{
+			
+		echo("<span class='badge badge-pill badge-success'>200 : Succeess Target Found.</span>");
+		echo("<div class='card' style='width:400px'>
+			<img class='card-img-top thumbnail' src='".($photos[0]->{'url'})."' alt='Card image'>
+			<div class='card-body'>
+				<h4 class='card-title'>".$contactInfo->{'fullName'}."</h4>
+				<p class='card-text'>
+					<b>Gender</b>: ".$demographics->{'gender'}."<br>
+					<b>Age</b>: ".$demographics->{'age'}."<br>
+					<b>Location</b>: ".$demographics->{'locationGeneral'}."
+				</p>
+				<a hred='#' class='btn btn-primary'>See Profile</a>
+			</div>
+		</div>");
+	}
+		for( $i = 0; $i < sizeof($social_media); $i++){
+			echo"<a href='".$social_media[$i]->{'url'}."'>".$social_media[$i]->{'type'}."</a><br>";
+			
+			}
+		//var_dump($photos[0]->{'url'});echo"<br><br><br><br>";
+		
+		//var_dump($social_media[0]->{'type'});echo"<br><br><br><br>";
+	//	echo"<br><br><br><br>";
+	//	echo $output;
 	?>
 </body>
 </html>
