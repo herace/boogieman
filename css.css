@@ -1,0 +1,11 @@
+body{
+background-color:#151E19;
+background-size:cover;
+background-image:url("images/background.jpg");
+background-repeat: no-repeat;
+background-attachment: fixed;
+}
+
+h2{
+	color:#0B7897;
+}

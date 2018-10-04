@@ -1,11 +1,17 @@
 <html>
 <head>
 	<title>BoogieMan | Are you being tracked by big companies?</title>
+	
+	<script src='js/jquery-3.3.1.min.js'></script>
+	<script src='js/bootstrap.bundle.min.js'></script>
+	
 	<link rel='stylesheet' href='css/bootstrap.min.css'>
+	<link rel='stylesheet' href='css.css'>
+	
 	
 </head>
-<body style='background-color:#eee'>
-	<div class='jumbotron' style='background-color:#C293C2'>
+<body>
+	<div class='jumbotron' style='background:rgba(0, 0, 0, 0.5)'>
 		<h2>BoogieMan</h2>
 	</div>
 	<div>
@@ -24,16 +30,6 @@
 		$key = "knDxYtUR8VAUcycRwJX3KBm0znwHxmSp";
 		$url = "https://api.fullcontact.com/v2/person.json?email=".$target_email;
 		
-		
-
-//		$curl_twitter = curl_init();
-//		curl_setopt($curl_twitter, CURLOPT_HTTPHEADER, array());
-		
-		$twitter_handler = curl_init();
-		
-		
-		
-		
 		//i know this looks barbaric, but i just did this for the sake of complete this within an hour
 		
 		//sets http header, urls and all that jazz
@@ -43,7 +39,6 @@
 		curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
 		
 		$output = curl_exec($handle);
-		
 		curl_close($handle);
 		$json = json_decode($output);
 		
@@ -53,32 +48,73 @@
 		$age = $json->{'age'};
 		$photos = $json->{'photos'};
 		$demographics = $json->{'demographics'};
-		//$location = $demographics->{'locationDeduced'};
 		
-		//var_dump($contactInfo->{'fullName'});
-		//echo"<h3>Name: ".$fullname."</h3>";
-		
-		for($i = 0; $i < (sizeof($layer1) - 1);$i++){
-			$target = json_encode($layer1[$i]);
-			preg_match('/twitter/', $target, $matches);
-			if($matches != null){
-				$twitter_buffer3 = $layer1[$i]->{"url"};
-			}
-		}
-		
-		curl_setopt($twitter_handler, CURLOPT_URL, $twitter_buffer3);
+		//TWITTER
+		/*
+		 * This is has a fixed url, couldn't test it since i ran out of reuqests, WIll replace url when request is refilled....
+		 * */
+		$twitter_handler = curl_init();
+		curl_setopt($twitter_handler, CURLOPT_URL, "https://twitter.com/BillGates" /*$twitter_buffer3*/);
 		curl_setopt($twitter_handler, CURLOPT_RETURNTRANSFER, true);
 		
-		$output_twitter = curl_exec($twitter_handler);
-		$buffer1 = preg_split(':(tweet-text):', $output_twitter);
-		$buffer2 = preg_split(':(alt):',$buffer1[1]);
+		$output_twitter =curl_exec($twitter_handler);
+		$dom_twitter = new DOMDocument;
+		$dom_twitter->loadHTML($output_twitter);
+		$xpath_twitter = new DOMXPath($dom_twitter);
+		$query_twitter = $xpath_twitter->query("//*[@class='js-tweet-text-container']");
+		
+		echo "<div class='accordion'>";
+		
+		echo"
+				<div class='card bg-dark'>
+					<div class='card-header'>
+						<a class='card-link' data-toggle='collapse' href='#collapseOne'>View Tweets</a>
+					</div>
+			";
+			
+		echo"<div id='collapseOne'><ul>";
+		for($i = 0; $i < 10; $i++){
+			echo $result_twitter = "<li style='color:#eee'>".$query_twitter->item($i)->nodeValue."</li>";
+		}
+		echo"</ul></div></div>";
+		
+		//Instagram
+		/*
+		 * TODO: Need to grab site  / filter. Doesnt work yet.
+		 * */
+		$instagram_handler = curl_init();
+		curl_setopt($instagram_handler, CURLOPT_URL, "https://www.instagram.com/thisisbillgates");
+		curl_setopt($instagram_handler, CURLOPT_RETURNTRANSFER, true);
+		
+		
+		$output_instagram = curl_exec($instagram_handler);
+		$dom_instagram = new DOMDocument;
+		$dom_instagram -> loadHTML($output_instagram);
+		$xpath_instagram = new DOMXPath($dom_instagram);
+		$query_instagram = $xpath_instagram->query("//*[@class='FFVAD']");
+		
+		//echo $result_instagram = "<p>".$query_instagram->item(0)->nodeValue."</p>";
+	
+		echo($output_instagram);
+		var_dump($query_instagram->item(0)->nodeValue);
+		echo"<div class='card bg-dark'>
+				<div class='card-header'>
+					<a class='card-link' data-toggle='collapse' href='#collapseTwo'>View Instagram Posts</a>
+				</div>
+			</div>";
+		
+		echo"</div>";
+		
+		echo("<br><br><br><br><br>");
+		
 		if($json->{'status'} != '200'){
+				
 				echo"<b>Unable to find target.</b>";
 			}
 		else{
 			
-		echo("<span class='badge badge-pill badge-success'>200 : Succeess Target Found.</span>");
-		echo("<div class='card' style='width:400px'>
+		echo("<span class='badge badge-pill badge-success'>Status: 200 Here's Johny!.</span>");
+		echo("<div class='card bg-dark' style='width:400px'>
 			<img class='card-img-top thumbnail' src='".($photos[0]->{'url'})."' alt='Card image'>
 			<div class='card-body'>
 				<h4 class='card-title'>".$contactInfo->{'fullName'}."</h4>
@@ -95,11 +131,7 @@
 			echo"<a href='".$social_media[$i]->{'url'}."'>".$social_media[$i]->{'type'}."</a><br>";
 			
 			}
-		//var_dump($photos[0]->{'url'});echo"<br><br><br><br>";
-		
-		//var_dump($social_media[0]->{'type'});echo"<br><br><br><br>";
-	//	echo"<br><br><br>";
-	//	echo $output;
+
 	?>
 </body>
 </html>
