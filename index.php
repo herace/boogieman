@@ -23,11 +23,19 @@
 	</div>
 	<?php
 		error_reporting(E_ALL ^ E_NOTICE);
-		error_reporting(E_ERROR | E_PARSE);	
+		error_reporting(E_ERROR | E_PARSE);		
+	/*
+	 * Could get facebook website without curl or file_get_contents, Maybe facebook servers is denying my curl request?
+	 * */
+	
+		
+	
+	if(isset($_POST['submit'])){
+	
 		$target_email =  $_POST['input_email'];
 		$handle = curl_init();
 		$base = "X-FullContact-APIKey:";
-		$key = "knDxYtUR8VAUcycRwJX3KBm0znwHxmSp";
+		$key = "2ziV72U0zxmuj5grCkNgz24G4WgSeG0Y";
 		$url = "https://api.fullcontact.com/v2/person.json?email=".$target_email;
 		
 		//i know this looks barbaric, but i just did this for the sake of complete this within an hour
@@ -49,67 +57,12 @@
 		$photos = $json->{'photos'};
 		$demographics = $json->{'demographics'};
 		
-		//TWITTER
-		/*
-		 * This is has a fixed url, couldn't test it since i ran out of reuqests, WIll replace url when request is refilled....
-		 * */
-		$twitter_handler = curl_init();
-		curl_setopt($twitter_handler, CURLOPT_URL, "https://twitter.com/BillGates" /*$twitter_buffer3*/);
-		curl_setopt($twitter_handler, CURLOPT_RETURNTRANSFER, true);
-		
-		$output_twitter =curl_exec($twitter_handler);
-		$dom_twitter = new DOMDocument;
-		$dom_twitter->loadHTML($output_twitter);
-		$xpath_twitter = new DOMXPath($dom_twitter);
-		$query_twitter = $xpath_twitter->query("//*[@class='js-tweet-text-container']");
-		
-		echo "<div class='accordion'>";
-		
-		echo"
-				<div class='card bg-dark'>
-					<div class='card-header'>
-						<a class='card-link' data-toggle='collapse' href='#collapseOne'>View Tweets</a>
-					</div>
-			";
-			
-		echo"<div id='collapseOne'><ul>";
-		for($i = 0; $i < 10; $i++){
-			echo $result_twitter = "<li style='color:#eee'>".$query_twitter->item($i)->nodeValue."</li>";
-		}
-		echo"</ul></div></div>";
-		
-		//Instagram
-		/*
-		 * TODO: Need to grab site  / filter. Doesnt work yet.
-		 * */
-		$instagram_handler = curl_init();
-		curl_setopt($instagram_handler, CURLOPT_URL, "https://www.instagram.com/thisisbillgates");
-		curl_setopt($instagram_handler, CURLOPT_RETURNTRANSFER, true);
 		
 		
-		$output_instagram = curl_exec($instagram_handler);
-		$dom_instagram = new DOMDocument;
-		$dom_instagram -> loadHTML($output_instagram);
-		$xpath_instagram = new DOMXPath($dom_instagram);
-		$query_instagram = $xpath_instagram->query("//*[@class='FFVAD']");
 		
-		//echo $result_instagram = "<p>".$query_instagram->item(0)->nodeValue."</p>";
-	
-		echo($output_instagram);
-		var_dump($query_instagram->item(0)->nodeValue);
-		echo"<div class='card bg-dark'>
-				<div class='card-header'>
-					<a class='card-link' data-toggle='collapse' href='#collapseTwo'>View Instagram Posts</a>
-				</div>
-			</div>";
-		
-		echo"</div>";
-		
-		echo("<br><br><br><br><br>");
-		
-		if($json->{'status'} != '200'){
+				if($json->{'status'} != '200'){
 				
-				echo"<b>Unable to find target.</b>";
+				echo"<p><b>Unable to find target.</b></p>";
 			}
 		else{
 			
@@ -131,7 +84,88 @@
 			echo"<a href='".$social_media[$i]->{'url'}."'>".$social_media[$i]->{'type'}."</a><br>";
 			
 			}
-
+		
+		//Get Social Media URLs
+		for( $i = 0; $i < sizeof($social_media); $i++){
+			if($social_media[$i]->{'type'} == 'twitter'){
+				$twitter_url = $social_media[$i]->{'url'};
+			}
+			else if($social_media[$i]->{'type'} == 'facebook'){
+				$facebook_url = $social_media[$i]->{'url'};
+			}
+			else if($social_media[$i]->{'type'} == 'instagram'){
+				$instagram_url = $social_media[$i]->{'url'};
+			}
+		}
+		
+		//TWITTER
+		$twitter_handler = curl_init();
+		curl_setopt($twitter_handler, CURLOPT_URL, $twitter_url);
+		curl_setopt($twitter_handler, CURLOPT_RETURNTRANSFER, true);
+		
+		$output_twitter =curl_exec($twitter_handler);
+		$dom_twitter = new DOMDocument;
+		$dom_twitter->loadHTML($output_twitter);
+		$xpath_twitter = new DOMXPath($dom_twitter);
+		$query_twitter = $xpath_twitter->query("//*[@class='js-tweet-text-container']");
+		
+		echo "<div class='accordion'>";
+		
+		echo"
+				<div class='card bg-dark'>
+					<div class='card-header'>
+						<a class='card-link' data-toggle='collapse' href='#collapseOne'>View Tweets</a>
+					</div>
+			";
+			
+		echo"<div id='collapseOne'><ul>";
+		for($i = 0; $i < 25; $i++){
+			if($query_twitter->item($i)->nodeValue != null){
+				echo $result_twitter = "<li style='color:#eee'>".$query_twitter->item($i)->nodeValue."</li>";
+				}
+		}
+		echo"</ul></div></div>";
+	
+		echo"<div class='card bg-dark'>
+				<div class='card-header'>
+					<a class='card-link' data-toggle='collapse' href='#collapseTwo'>View Instagram Posts</a>
+				</div>";
+		
+		//TWITTER SLIDER
+		
+		$buffer_1 = preg_split('(data-image-url=")', $output_twitter);
+		
+	echo"
+		<div id='twitter_slider' class='carousel slide' data-ride='carousel' style='width: 800px; height: 500px'>
+			<div class='carousel-inner'>
+	";
+		for($i = 1; $i < sizeof($buffer_1); $i++){
+			if($buffer_1 != null){
+				$buffer_2 = explode('"', $buffer_1[$i]);
+				echo"
+					<div class='carousel-item ";
+					if($i == 1){echo" active";}
+					echo"'><img src='".$buffer_2[0]."' width='800' height='500'></div>";			
+			}
+		}
+		
+	echo"
+		<a class='carousel-control-prev' href='#twitter_slider' data-slide='prev'>
+			<span class='carousel-control-prev-icon'></span>
+		</a>
+		<a class='carousel-control-next' href='#twitter_slider' data-slide='next'>
+			<span class='carousel-control-next-icon'></span>
+		</a>
+	</div></div>";
+				
+				
+		echo"</div>";
+		
+		echo"</div>";
+		
+		echo("<br><br><br><br><br>");
+		
+}
 	?>
 </body>
 </html>

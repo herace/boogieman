@@ -1,9 +1,18 @@
+p{
+	color:#eee;
+	background-color:rgba(0, 0, 0, 0.25);
+}
 body{
 background-color:#151E19;
 background-size:cover;
 background-image:url("images/background.jpg");
 background-repeat: no-repeat;
 background-attachment: fixed;
+}
+
+label{
+	color:#E4F6BF;
+	/*background-color:rgba(0, 0, 0, 0.25);*/
 }
 
 h2{
