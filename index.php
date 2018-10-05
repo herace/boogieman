@@ -128,10 +128,10 @@
 	
 		echo"<div class='card bg-dark'>
 				<div class='card-header'>
-					<a class='card-link' data-toggle='collapse' href='#collapseTwo'>View Instagram Posts</a>
+					<a class='card-link' data-toggle='collapse' href='#collapseTwo'>View Twitter Pictures</a>
 				</div>";
 		
-		//TWITTER SLIDER
+		////TWITTER SLIDER
 		
 		$buffer_1 = preg_split('(data-image-url=")', $output_twitter);
 		
